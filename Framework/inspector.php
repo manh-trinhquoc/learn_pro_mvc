@@ -2,6 +2,9 @@
 
 namespace Framework;
 
+use Framework\ArrayMethods as ArrayMethods;
+use Framework\StringMethods as StringMethods;
+
 class Inspector
 {
     protected $_class;
