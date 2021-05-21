@@ -21,7 +21,7 @@ function autoload($class)
     throw new Exception("{$class} not found");
 }
 
-class Autoloader 
+class Autoloader
 {
     public static function autoload($class)
     {
