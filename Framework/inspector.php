@@ -16,7 +16,7 @@ class Inspector
     protected $_properties = array();
     protected $_methods = array();
 
-    public function __construct($class);
+    public function __construct($class)
     {
         $this->_class = $class;
     }
@@ -42,7 +42,7 @@ class Inspector
     protected function _getPropertyComment($property)
     {
         $reflection = new \ReflectionProperty($this->_class, $property);
-        return $reflection->getDocComment()
+        return $reflection->getDocComment();
     }
 
     protected function _getMethodComment($method)
