@@ -1,5 +1,7 @@
 <?php
 
+use Framework\Inspector;
+
 require_once 'autoload.php';
 class Hello extends Framework\Base
 {
@@ -26,5 +28,14 @@ $hello = new Hello();
 $hello->world = "foo!";
 $hello->test = "test!";
 
-echo $hello->world;
-echo $hello->test;
+var_dump($hello->world);
+var_dump($hello->test);
+
+$inspector = new Inspector('hello');
+var_dump($inspector);
+var_dump($inspector->getClassMeta());
+var_dump($inspector->getClassProperties());
+var_dump($inspector->getPropertyMeta('_world'));
+var_dump($inspector->getPropertyMeta('test'));
+var_dump($inspector->getClassMethods());
+var_dump($inspector->getMethodMeta('setWorld'));

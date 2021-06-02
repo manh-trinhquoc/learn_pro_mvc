@@ -110,7 +110,7 @@ class Inspector
                 $_methods[] = $method->getName();
             }
         }
-        return $_properties;
+        return $_methods;
     }
 
     public function getPropertyMeta($property)
