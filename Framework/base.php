@@ -14,10 +14,8 @@ class Base
     {
         $this->_inspector = new Inspector($this);
 
-        if (is_array($options) || is_object($options))
-        {
-            foreach ($options as $key => $value)
-            {
+        if (is_array($options) || is_object($options)) {
+            foreach ($options as $key => $value) {
                 $key = ucfirst($key);
                 $method = "set{$key}";
                 $this->method($value);
@@ -27,39 +25,31 @@ class Base
 
     public function __call($name, $arguments)
     {
-        if (empty($this->_inspector)) 
-        {
+        if (empty($this->_inspector)) {
             throw new Exception("Call parent::_construct!");
         }
         $getMatches = StringMethods::match($name, "^get([a-zA-Z0-9]+)$");
-        if (sizeof($getMatches) > 0)
-        {
+        if (sizeof($getMatches) > 0) {
             $normalized = lcfirst($getMatches[0]);
             $property = "_{$normalized}";
-            if ($property_exists($this, $property))
-            {
+            if ($property_exists($this, $property)) {
                 $meta = $this->_inspector->getPropertyMeta($property);
-                if (empty($meta["@readwrite"]) && empty($meta["@read"]))
-                {
+                if (empty($meta["@readwrite"]) && empty($meta["@read"])) {
                     throw $this->_getExceptionForWriteonly($normalized);
                 }
-                if (isset($this->$property)) 
-                {
+                if (isset($this->$property)) {
                     return $this->$property;
                 }
                 return null;
             }
         }
         $setMatches = StringMethods::match($name, "^([a-zA-Z0-9]+)$");
-        if (sizeof($setMatches) > 0)
-        {
+        if (sizeof($setMatches) > 0) {
             $normalized = lcfirst($setMatches[0]);
             $property = "_{$normalized}";
-            if (property_exists($this, $property))
-            {
+            if (property_exists($this, $property)) {
                 $meta = $this->_inspector->getPropertyMeta($property);
-                if (empty($meta['@readwrite']) && empty($meta['@write']))
-                {
+                if (empty($meta['@readwrite']) && empty($meta['@write'])) {
                     throw $this->_getExceptionForReadonly($normalized);
                 }
                 $this->property = $arguments[0];

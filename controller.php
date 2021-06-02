@@ -11,7 +11,6 @@ class Controller
      * @once
      */
     public function authenticate()
-    {
-        
+    {   
     }
 }

@@ -57,10 +57,8 @@ class Inspector
         $pattern = "(@[a-zA-Z]+\s*[a-zA-Z, ()_]*)";
         $matches = StringMethods::match($comment, $pattern);
 
-        if ($matches != null)
-        {
-            foreach ($matches as $match)
-            {
+        if ($matches != null) {
+            foreach ($matches as $match) {
                 $parts = ArrayMethods::clean(
                     ArrayMethods::trim(
                         StringMethods::split($match, "[\s]", 2)
@@ -68,8 +66,7 @@ class Inspector
                 );
                 
                 $meta[$parts[0]] = true;
-                if (sizeof($parts) > 1)
-                {
+                if (sizeof($parts) > 1) {
                     $meta[$parts[0]] = ArrayMethods::clean(
                         ArrayMethods::trim(
                             StringMethods::split($parts[1], ",")
@@ -83,14 +80,11 @@ class Inspector
 
     public function getClassMeta()
     {
-        if (!isset($_meta['class']))
-        {
+        if (!isset($_meta['class'])) {
             $comment = $this->_getClassComment();
-            if (!empty($comment))
-            {
+            if (!empty($comment)) {
                 $_meta['class'] = $this->_parse($comment);
-            } else
-            {
+            } else {
                 $_meta['class'] = null;
             }
         }
@@ -99,11 +93,9 @@ class Inspector
 
     public function getClassProperties()
     {
-        if (!isset($_properties))
-        {
+        if (!isset($_properties)) {
             $properties = $this->_getClassProperties();
-            foreach ($properties as $property)
-            {
+            foreach ($properties as $property) {
                 $_properties[] = $property->getName();
             }
         }
@@ -112,11 +104,9 @@ class Inspector
 
     public function getClassMethods()
     {
-        if (!isset($_methods))
-        {
+        if (!isset($_methods)) {
             $methods = $this->_getClassMethods();
-            foreach ($methods as $method)
-            {
+            foreach ($methods as $method) {
                 $_methods[] = $method->getName();
             }
         }
@@ -125,14 +115,11 @@ class Inspector
 
     public function getPropertyMeta($property)
     {
-        if (!isset($_meta["properties"][$property]));
-        {
+        if (!isset($_meta["properties"][$property])) {
             $comment = $this->_getPropertyComment($property);
-            if (!empty($comment))
-            {
+            if (!empty($comment)) {
                 $_meta["properties"][$property] = $this->_parse($comment);
-            } else 
-            {
+            } else {
                 $_meta['properties'][$property] = null;
             }
         }
@@ -141,14 +128,11 @@ class Inspector
 
     public function getMethodMeta($method)
     {
-        if (!isset($_meta["actions"][$method]))
-        {
+        if (!isset($_meta["actions"][$method])) {
             $comment = $this->_getMethodComment($method);
-            if (!empty($comment))
-            {
+            if (!empty($comment)) {
                 $_meta["methods"][$method] = $this->_parse($comment);
-            } else
-            {
+            } else {
                 $_meta["methods"][$method] = null;
             }
         }

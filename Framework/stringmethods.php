@@ -7,12 +7,10 @@ class StringMethods
     private static $_delimiter = "#";
     private function __construct()
     {
-        
     }
 
     private function __clone()
     {
-        
     }
 
     private static function _normalize($pattern) {
@@ -32,8 +30,7 @@ class StringMethods
     public static function match($string, $pattern)
     {
         preg_match_all(self::_normalize($pattern), $string, $matches, PREG_PATTERN_ORDER);
-        if (!empty($matches[1]))
-        {
+        if (!empty($matches[1])) {
             return $matches[1];
         }
         if (!empty($matches[0])) {
