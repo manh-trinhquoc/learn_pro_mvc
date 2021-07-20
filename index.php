@@ -39,3 +39,20 @@ var_dump($inspector->getPropertyMeta('_world'));
 var_dump($inspector->getPropertyMeta('test'));
 var_dump($inspector->getClassMethods());
 var_dump($inspector->getMethodMeta('setWorld'));
+
+
+//tesst ussing the cache classes
+function getFriends() {
+    $cache = new \Framework\Core(array(
+        "type" => "memcached"
+    ));
+
+    $cache->initialize();
+    $friends = unserialize($cache->get("friends.{$user->id}"));
+    if (empty($friends)) {
+        //get friend from db
+        $cache->set("firends.{$user->id}", serialize($friends));
+    }
+
+    return $friends;
+}
