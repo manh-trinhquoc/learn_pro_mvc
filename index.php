@@ -56,3 +56,57 @@ function getFriends() {
 
     return $friends;
 }
+
+// tesst ussing registry
+class Ford
+{
+    public $founder = "Henry Ford";
+    public $headquarter = "Detroit";
+    public $employees = 16400;
+
+    public function produces($car)
+    {
+        return $car->producer == $this;
+    }
+
+    private static $_instance;
+
+    private function __construct()
+    {
+        //do nothing
+    }
+
+    private function __clone()
+    {
+        //do nothing
+    }
+
+    public function instance()
+    {
+        if (!isset(self::$_instance))
+        {
+            self::$_instance = new self();
+        }
+        return 
+    }
+}
+class Car
+{
+    public $color;
+    public $producer;
+}
+
+$ford = new Ford();
+$car = new Car();
+$car->color = "Blue";
+$car->producer = $ford;
+
+echo $ford->produces($car);
+echo $ford->founder;
+
+Framework\Registry::set("ford", new Ford());
+$car = new Car();
+$car->setColor("Blue")->setProcducer(Framework\Registry::get("ford"));
+
+echo Framework\Registry::get('ford')->produces($car);
+echo Framework\Registry::get('ford')->founder;
