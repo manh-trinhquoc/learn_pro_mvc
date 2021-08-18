@@ -32,7 +32,7 @@ class ArrayMethods
         {
             if (is_array($value) || is_object($value))
             {
-                return = self::flatten($value, $return);
+                return self::flatten($value, $return);
             } else {
                 $return[] = $value;
             }
