@@ -108,4 +108,92 @@ class Template extends Base
             "isolated" => (!empty($type["tags"]) ? $type["tags"][$tag]["isolated"]: false)
         );
     }
+
+    protected function _array($source)
+    {
+        $parts=array();
+        $tags =array();
+        $all = array();
+        $type = null;
+        $delimiter = null;
+
+        while ($source) {
+            $match = $this->_implementation->match($source);
+            $type = $match["type"];
+            $delimiter = $match["delimiter"];
+            $opener = strpos($source, $type["opener"]);
+            $closer = strpos($source, $type["closer"]) +strlen($type["closer"]);
+            if ($opener !== false) {
+                $parts[] =substr($source, 0, $opener);
+                $tags[] =substr($source, $opener, $closer - $opener);
+                $source=substr($source, $closer);
+            } else {
+                $parts[] =$source;
+                $source ="";
+            }
+        }
+        foreach ($parts as $i => $part) {
+            $all[] =$part;
+            if (isset($tags[$i])) {
+                $all[] =$tags[$i];
+            }
+        }
+        return array(
+            "text" => ArrayMethods::clean($parts),
+            "tags" => ArrayMethods::clean($tags),
+            "all" => ArrayMethods::clean($all)
+        );
+    }
+
+    protected function _tree($array)
+    {
+        $root = array(
+            "children" => array()
+        );
+        $current = & $root;
+        foreach ($array as $i => $node) {
+            $result = $this->_tag($node);
+            if ($result) {
+                $tag = isset($result["tag"]) ? $result["tag"] : "";
+                $arguments = isset($result["arguments"]) ? $result["arguments"] : "";
+                if ($tag) {
+                    if (!$result["closer"]) {
+                        $last=ArrayMethods::last($current["children"]);
+                        if ($result["isolated"] && is_string($last)) {
+                            array_pop($current["children"]);
+                        }
+                        $current["children"][]=array(
+                            "index" => $i,
+                            "parent" => &$current,
+                            "children" => array(),
+                            "raw" => $result["source"],
+                            "tag" => $tag,
+                            "arguments" => $arguments,
+                            "delimiter" => $result["delimiter"],
+                            "number" => sizeof($current["children"])
+                        );
+                        $current=& $current["children"][sizeof($current["children"]) - 1];
+                    } elseif (isset($current["tag"]) && $result["tag"] == $current["tag"]) {
+                        $start=$current["index"]+1;
+                        $length=$i - $start;
+                        $current["source"]=implode(array_slice($array, $start,$length));
+                        $current=& $current["parent"];
+                    }
+                } else {
+                    $current["children"][]=array(
+                        "index" => $i,
+                        "parent" => &$current,
+                        "children" => array(),
+                        "raw" => $result["source"],
+                        "tag" => $tag,
+                        "arguments" => $arguments,
+                        "delimiter" => $result["delimiter"],
+                        "number" => sizeof($current["children"])
+                    );
+                }
+            } else {
+                $current["children"][]=$node;
+            }
+        }
+    }
 }
