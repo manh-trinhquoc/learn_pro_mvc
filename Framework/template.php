@@ -196,4 +196,44 @@ class Template extends Base
             }
         }
     }
+    protected function _script($tree)
+    {
+        $content=array();
+        if (is_string($tree)) {
+            $tree =addslashes($tree);
+                return "\$_text[]=\"{$tree}\";";
+        }
+        if (sizeof($tree["children"])>0) {
+            foreach ($tree["children"] as $child) {
+                $content[] =$this->_script($child);
+            }
+        }
+        if (isset($tree["parent"])) {
+            return $this->_implementation->handle($tree, implode($content));
+        }
+        return implode($content);
+    }
+    public function parse($template)
+    {
+        if (!is_a($this-> _implementation, "Framework\Template\Implementation")) {
+            throw new Exception\Implementation();
+        }
+        $array = $this->_array($template);
+        $tree = $this->_tree($array["all"]);
+        $this->_code = $this->header.$this->_script($tree).$this->footer;
+        $this->_function = create_function("\$_data", $this->code);
+        return $this;
+    }
+
+    public function process($data=array())
+    {
+        if ($this->_function == null) {
+            throw new Exception\Parser();
+        } try {
+            $function = $this->_function;
+            return $function($data);
+        } catch (\Exception $e) {
+            throw new Exception\Parser($e);
+        }
+    }
 }
