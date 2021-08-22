@@ -72,8 +72,8 @@ class Base
                 return $this;
             }
         }
-        var_dump('before throw exception framework\base: ' . $name);
-        throw $this->_getExceptionForImplementation($name);
+        $exception =  $this->_getExceptionForImplementation($name);
+        throw $exception;
     }
 
     public function __get($name)
