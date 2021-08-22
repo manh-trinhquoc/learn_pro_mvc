@@ -22,9 +22,9 @@ class Base
             foreach ($options as $key => $value) {
                 $key = ucfirst($key);
                 $method = "set{$key}";
-                var_dump('before call: ' . $method . ' ' . $value);
+                // var_dump('before call: ' . $method . ' ' . $value);
                 $this->$method($value);
-                var_dump('after call: ' . $method . ' ' . $value);
+                // var_dump('after call: ' . $method . ' ' . $value);
             }
         }
     }
@@ -44,7 +44,8 @@ class Base
         if (sizeof($getMatches) > 0) {
             $normalized = lcfirst($getMatches[0]);
             $property = "_{$normalized}";
-            if ($property_exists($this, $property)) {
+            $property_exists = property_exists($this, $property);
+            if ($property_exists) {
                 $meta = $this->_inspector->getPropertyMeta($property);
                 if (empty($meta["@readwrite"]) && empty($meta["@read"])) {
                     throw $this->_getExceptionForWriteonly($normalized);
@@ -59,16 +60,15 @@ class Base
         if (sizeof($setMatches) > 0) {
             $normalized = lcfirst($setMatches[0]);
             $property = "_{$normalized}";
-            var_dump($property);
+            // var_dump($property);
             $property_exists = property_exists($this, $property);
-            var_dump('property exists: ' . $property_exists);
+            // var_dump('property exists: ' . $property_exists);
             if ($property_exists) {
                 $meta = $this->_inspector->getPropertyMeta($property);
                 if (empty($meta['@readwrite']) && empty($meta['@write'])) {
                     throw $this->_getExceptionForReadonly($normalized);
                 }
                 $this->$property = $arguments[0];
-                $this->property = $arguments[0];
                 return $this;
             }
         }
@@ -84,6 +84,7 @@ class Base
 
     public function __set($name, $value)
     {
+        // var_dump('invoke __set: ' . $name . ' => ' . $value);
         $function = "set".ucfirst($name);
         return $this->$function($value);
     }

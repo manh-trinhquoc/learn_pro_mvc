@@ -34,6 +34,7 @@ class Memcached extends Cache\Driver {
     }
 
     public function connect() {
+        // var_dump('invoke connect');
         try {
             $this->_service = new \Memcache();
             $this->_service->connect(

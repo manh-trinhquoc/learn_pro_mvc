@@ -40,7 +40,8 @@ class Test
                 $exceptions[] = array(
                     "set" => $test["set"],
                     "title" => $test["title"],
-                    "type" => get_class($e)
+                    "type" => get_class($e),
+                    // "e" => $e,
                 );
             }
         }
