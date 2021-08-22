@@ -29,14 +29,19 @@ class StringMethods
 
     public static function match($string, $pattern)
     {
+        // 
+        // $numargs = func_get_args();
+        // var_dump($numargs);
+        // 
         preg_match_all(self::_normalize($pattern), $string, $matches, PREG_PATTERN_ORDER);
+
         if (!empty($matches[1])) {
             return $matches[1];
         }
         if (!empty($matches[0])) {
             return $matches[0];
         }
-        return null;
+        return [];
     }
 
     public static function split($string, $pattern, $limit = null)

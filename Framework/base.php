@@ -12,20 +12,32 @@ class Base
     private $_inspector;
     public function __construct($options = array())
     {
+        // 
+        // $numargs = func_get_args();
+        // var_dump($numargs);
+        // 
         $this->_inspector = new Inspector($this);
 
         if (is_array($options) || is_object($options)) {
             foreach ($options as $key => $value) {
                 $key = ucfirst($key);
                 $method = "set{$key}";
-                $this->method($value);
+                var_dump('before call: ' . $method . ' ' . $value);
+                $this->$method($value);
+                var_dump('after call: ' . $method . ' ' . $value);
             }
         }
     }
 
     public function __call($name, $arguments)
     {
-        if (empty($this->_inspector)) {
+        // 
+        // $numargs = func_get_args();
+        // var_dump($numargs);
+        // 
+        
+        $inspector = $this->_inspector;
+        if (empty($inspector)) {
             throw new Exception("Call parent::_construct!");
         }
         $getMatches = StringMethods::match($name, "^get([a-zA-Z0-9]+)$");
@@ -43,19 +55,24 @@ class Base
                 return null;
             }
         }
-        $setMatches = StringMethods::match($name, "^([a-zA-Z0-9]+)$");
+        $setMatches = StringMethods::match($name, "^set([a-zA-Z0-9]+)$");
         if (sizeof($setMatches) > 0) {
             $normalized = lcfirst($setMatches[0]);
             $property = "_{$normalized}";
-            if (property_exists($this, $property)) {
+            var_dump($property);
+            $property_exists = property_exists($this, $property);
+            var_dump('property exists: ' . $property_exists);
+            if ($property_exists) {
                 $meta = $this->_inspector->getPropertyMeta($property);
                 if (empty($meta['@readwrite']) && empty($meta['@write'])) {
                     throw $this->_getExceptionForReadonly($normalized);
                 }
+                $this->$property = $arguments[0];
                 $this->property = $arguments[0];
                 return $this;
             }
         }
+        var_dump('before throw exception framework\base: ' . $name);
         throw $this->_getExceptionForImplementation($name);
     }
 
@@ -88,7 +105,9 @@ class Base
 
     protected function _getExceptionForImplementation($method)
     {
+        var_dump('before throw Exception\Argument ' . $method);
         return new Exception\Argument("{$method} method not implemented");
+        var_dump('after throw Exception\Argument ' . $method);
     }
 
 }
