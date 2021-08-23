@@ -5,6 +5,11 @@ namespace Framework\Cache\Driver;
 use Framework\Cache as Cache;
 use Framework\Cache\Exception as Exception;
 
+/**
+ * Docker memcached https://hub.docker.com/_/memcached
+ * chạy memcache: docker run --name my-memcache -d memcached memcached -m 256
+ */
+
 class Memcached extends Cache\Driver {
     protected $_service;
     /**
@@ -34,9 +39,18 @@ class Memcached extends Cache\Driver {
     }
 
     public function connect() {
-        // var_dump('invoke connect');
+        var_dump('invoke connect');
         try {
+            var_dump('before instantiate Memcached objec');
+
+            $memcache = new \Memcache;
+            $memcacheD = new \Memcached;
+            
             $this->_service = new \Memcache();
+            
+            var_dump('after instantiate Memcached objec');
+            var_dump($this->_service);
+
             $this->_service->connect(
                 $this->host,
                 $this->port
