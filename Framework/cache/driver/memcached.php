@@ -8,6 +8,7 @@ use Framework\Cache\Exception as Exception;
 /**
  * Docker memcached https://hub.docker.com/_/memcached
  * chạy memcache: docker run --name my-memcache -d memcached memcached -m 256
+ * hoặc:  docker container run --name my-memcache --publish 11211:11211 -d memcached memcached -m 256 
  */
 
 class Memcached extends Cache\Driver {
