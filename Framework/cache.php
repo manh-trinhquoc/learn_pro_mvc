@@ -26,8 +26,9 @@ class Cache extends Base {
         }
         switch ($this->type) {
             case "memcached":
-                return new Cache\Driver\Memcached($this->options);
-                return;
+                $memcache = new Cache\Driver\Memcached($this->options);
+                $memcache = $memcache->initialize();
+                return $memcache;
             default:
                 throw new Exception\Argument("Invalid type");
                 return;

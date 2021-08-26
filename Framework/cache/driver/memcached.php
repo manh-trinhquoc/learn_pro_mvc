@@ -4,6 +4,7 @@ namespace Framework\Cache\Driver;
 
 use Framework\Cache as Cache;
 use Framework\Cache\Exception as Exception;
+use Framework\StringMethods as StringMethods;
 
 /**
  * Docker memcached https://hub.docker.com/_/memcached
@@ -28,6 +29,11 @@ class Memcached extends Cache\Driver {
      */
     protected $_isConnected = false;
 
+    /**
+     * @readwrite
+     */
+    protected $_prefix = null;
+
     protected function _isValidService() {
         $isEmpty = empty($this->_service);
         $isInstance = $this->_service instanceof \Memcache;
@@ -40,18 +46,8 @@ class Memcached extends Cache\Driver {
     }
 
     public function connect() {
-        var_dump('invoke connect');
         try {
-            var_dump('before instantiate Memcached objec');
-
-            $memcache = new \Memcache;
-            $memcacheD = new \Memcached;
-            
             $this->_service = new \Memcache();
-            
-            var_dump('after instantiate Memcached objec');
-            var_dump($this->_service);
-
             $this->_service->connect(
                 $this->host,
                 $this->port
@@ -72,22 +68,40 @@ class Memcached extends Cache\Driver {
         return $this;
     }
 
+    public function get($key, $default = null) {
+        if (!$this->_isValidService()) {
+            throw new Exception\Service("Not connected to a valid service");
+        }
+        $flag = MEMCACHE_COMPRESSED;
+        $value = $this->_service->get($this->_prefix . $key, $flag);
+        if ($value) {
+            return $value;
+        }
+        return $default;
+    }
+
     public function set($key, $value, $duration = 120) {
         if (!$this->_isValidService()) {
             throw new Exception\Service("Not connected to a valid service");
         }
 
-        $this->_service->set($key, $value, MEMCACHE_COMPRESSED, $duration);
+        $this->_service->set($this->_prefix . $key, $value, MEMCACHE_COMPRESSED, $duration);
         return $this;
     }
 
     public function erase($key)
     {
-        if (!$this->_isValidService()){
+        if (!$this->_isValidService()) {
             throw new Exception\Service("Not connect to a valid service");
         }
 
-        $this->_service->delete($key);
+        $this->_service->delete($this->_prefix . $key);
         return $this;
+    }
+
+    public function initialize()
+    {
+        $this->_prefix = StringMethods::generateRandomString(4);
+        return parent::initialize();
     }
 }
