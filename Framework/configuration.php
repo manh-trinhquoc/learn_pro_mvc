@@ -31,6 +31,9 @@ class Configuration extends Base
             case "ini":
                 return new Configuration\Driver\Ini($this->options);
                 break;
+            case "json":
+                return new Configuration\Driver\Json($this->options);
+                break;
             default:
                 throw new Exception\Argument("Invalid type");
                 break;

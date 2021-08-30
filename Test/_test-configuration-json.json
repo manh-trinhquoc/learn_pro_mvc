@@ -1,0 +1,8 @@
+{
+    "config": {
+        "first": "hello",
+        "second": {
+            "second": "bar"
+        }
+    }
+}

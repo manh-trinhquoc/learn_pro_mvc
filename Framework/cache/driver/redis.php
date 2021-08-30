@@ -92,7 +92,7 @@ class Redis extends Cache\Driver {
             throw new Exception\Service("Not connect to a valid service");
         }
 
-        $this->_service->delete($this->_prefix . $key);
+        $this->_service->del($this->_prefix . $key);
         return $this;
     }
 
