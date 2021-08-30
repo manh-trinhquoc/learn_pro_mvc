@@ -29,6 +29,10 @@ class Cache extends Base {
                 $memcache = new Cache\Driver\Memcached($this->options);
                 $memcache = $memcache->initialize();
                 return $memcache;
+            case "redis":
+                $memcache = new Cache\Driver\Redis($this->options);
+                $memcache = $memcache->initialize();
+                return $memcache;
             default:
                 throw new Exception\Argument("Invalid type");
                 return;
