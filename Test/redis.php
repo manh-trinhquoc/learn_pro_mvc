@@ -132,7 +132,9 @@ Framework\Test::add(
         $cache = $cache->initialize();
         $cache = $cache->connect();
         $cache = $cache->set("hello", "world");
+        // var_dump($cache->get("hello"));
         $cache = $cache->erase("hello");
+        // var_dump($cache->get("hello"));
         return ($cache->get("hello") == null && $cache instanceof Framework\Cache\Driver\Redis);
     },
     "Cache\Driver\Redis erases values and returns itself",
