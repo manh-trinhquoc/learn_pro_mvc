@@ -37,6 +37,11 @@ class Test
                     );
                 }
             } catch (\Exception $e) {
+                $exception_class = get_class($e);
+                if ($exception_class == 'Exception') {
+                    var_dump($e);
+                    die();
+                }
                 $exceptions[] = array(
                     "set" => $test["set"],
                     "title" => $test["title"],

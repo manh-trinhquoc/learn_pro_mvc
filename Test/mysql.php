@@ -8,7 +8,7 @@ Framework\Test::add(
         $database = new Framework\Database();
         return ($database instanceof Framework\Database);
     },
-    "Database instantiates in uninitialized state",
+    "Database factory class instantiates in uninitialized state",
     "Database"
 );
 
@@ -18,7 +18,7 @@ $options = array(
         "host" => "localhost",
         "username" => "root",
         "password" => "",
-        "schema" => "prophpmvc"
+        "schema" => "prophpmvc",
     )
 );
 
@@ -33,6 +33,8 @@ Framework\Test::add(
     "Database\Connector\Mysql"
 );
 
+
+
 Framework\Test::add(
     // The Database\Connector\Mysql class can connect and return itself.
     function () use ($options) {
@@ -41,9 +43,10 @@ Framework\Test::add(
         $database = $database->connect();
         return ($database instanceof Framework\Database\Connector\Mysql);
     },
-    "Database\Connector\Mysql connects and returns self",
+    "Database\Connector\Mysql can connects and returns self",
     "Database\Connector\Mysql"
 );
+
 Framework\Test::add(
     // The Database\Connector\Mysql class can disconnect and return itself.
     function () use ($options) {
@@ -61,6 +64,7 @@ Framework\Test::add(
     "Database\Connector\Mysql disconnects and returns self",
     "Database\Connector\Mysql"
 );
+
 Framework\Test::add(
     // The Database\Connector\Mysql class can escape values.
     function () use ($options) {
@@ -73,8 +77,9 @@ Framework\Test::add(
     "Database\Connector\Mysql"
 );
 
+
 Framework\Test::add(
-    // The Database\Connector\Mysql class can execute SQL queries.
+    // The Database\Connector\Mysql class can returns last sql error.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -82,12 +87,12 @@ Framework\Test::add(
         $database->execute("
             SOME INVALID SQL
         ");
-        return (bool) $database->lastError;
+        $lastError = $database->lastError;
+        return (bool) $lastError;
     },
-    "Database\Connector\Mysql returns last error",
+    "Database\Connector\Mysql can returns last sql error",
     "Database\Connector\Mysql"
 );
-
 
 Framework\Test::add(
     // The Database\Connector\Mysql class can execute SQL queries.
@@ -96,15 +101,15 @@ Framework\Test::add(
         $database = $database->initialize();
         $database = $database->connect();
         $database->execute("
-            DROP TABLE IF EXISTS 'tests';
+            DROP TABLE IF EXISTS tests;
         ");
         $database->execute("
-            CREATE TABLE 'tests' (
-                'id' int(11) NOT NULL AUTO_INCREMENT,
-                'number' int(11) NOT NULL,
-                'text' varchar(255) NOT NULL,
-                'boolean' tinyint(4) NOT NULL,
-                PRIMARY KEY ('id')
+            CREATE TABLE tests (
+                id int(11) NOT NULL AUTO_INCREMENT,
+                number int(11) NOT NULL,
+                text varchar(255) NOT NULL,
+                boolean tinyint(4) NOT NULL,
+                PRIMARY KEY (id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ");
         return !$database->lastError;
@@ -121,7 +126,7 @@ Framework\Test::add(
         $database = $database->connect();
         for ($i = 0; $i < 4; $i++) {
             $database->execute("
-                INSERT INTO 'tests' ('number', 'text', 'boolean') VALUES (‘1337’, ‘text’, ‘0’);
+                INSERT INTO tests (number, text, boolean) VALUES ('1337', 'text', '0');
             ");
         }
         return $database->lastInsertId;
@@ -137,7 +142,7 @@ Framework\Test::add(
         $database = $database->initialize();
         $database = $database->connect();
         $database->execute("
-            UPDATE 'tests' SET 'number' = 1338;
+            UPDATE tests SET number = 1338;
         ");
         return $database->affectedRows;
     },
@@ -148,11 +153,11 @@ Framework\Test::add(
 // The Database\Connector\Mysql class can return the last SQL error.
 
 /**
- * Because we are working with both connectors and queries, we need to check the associations between the two
+ * Because we are working with both connectors and queries, 
+ * we need to check the associations between the two
  */
-
-// The Database\Connector\Mysql class can return a Database\Connector\Mysql instance.
 Framework\Test::add(
+    // The Database\Connector\Mysql class can return a Database\Query\Mysql instance.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -171,14 +176,14 @@ Framework\Test::add(
         $database = $database->initialize();
         $database = $database->connect();
         $query = $database->query();
-        return ($query->connector instanceof Framework\Database\Connector\Mysql);
+        $connector = $query->connector;
+        // var_dump($connector === $database);
+        return ($connector instanceof Framework\Database\Connector\Mysql);
     },
-    "Database\Query\Mysql references connector",
+    "Database\Query\Mysql references connector Database\Connector\Mysql",
     "Database\Query\Mysql"
 );
 //end check associtations
-
-
 
 Framework\Test::add(
     // The Database\Query\Mysql class can fetch the first row in a table.
@@ -194,6 +199,10 @@ Framework\Test::add(
     "Database\Query\Mysql fetches first row",
     "Database\Query\Mysql"
 );
+
+$result = Framework\Test::run();
+var_dump($result);
+// var_dump($result['exceptions']);
 
 Framework\Test::add(
     // The Database\Query\Mysql class can fetch multiple rows in a table.
@@ -323,40 +332,35 @@ Framework\Test::add(
 
 Framework\Test::add(
     // The Database\Query\Mysql class can update rows.
-    function () use ($options)
-    {
-    $database = new Framework\Database($options);
-    $database = $database->initialize();
-    $database = $database->connect();
-    $result = $database->query()
-    ->from("tests")
-    ->where("id = ?", 5)
-    ->save(array(
-    "number" => 3,
-    "text" => "foo",
-    "boolean" => false
-    ));
-    return ($result == 0);
+    function () use ($options) {
+        $database = new Framework\Database($options);
+        $database = $database->initialize();
+        $database = $database->connect();
+        $result = $database->query()
+            ->from("tests")
+            ->where("id = ?", 5)
+            ->save(array(
+                "number" => 3,
+                "text" => "foo",
+                "boolean" => false
+            ));
+        return ($result == 0);
     },
     "Database\Query\Mysql can update rows",
     "Database\Query\Mysql"
 );
 
-       Framework\Test::add(
-        function() use ($options)
-        {
+Framework\Test::add(
+    // The Database\Query\Mysql class can delete rows.
+    function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
         $database = $database->connect();
         $database->query()
-        ->from("tests")
-        ->delete();
+            ->from("tests")
+            ->delete();
         return ($database->query()->from("tests")->count() == 0);
-        },
-        "Database\Query\Mysql can delete rows",
-        "Database\Query\Mysql"
-       );
-
-
-
-// The Database\Query\Mysql class can delete rows.
+    },
+    "Database\Query\Mysql can delete rows",
+    "Database\Query\Mysql"
+);

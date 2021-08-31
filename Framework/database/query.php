@@ -77,14 +77,14 @@ use Framework\Base as Base;
         return $this->connector->escape($value);
     }
 
-    public function from($from, $fields=array("*"))
+    public function from($from, $fields = array("*"))
     {
         if (empty($from)) {
             throw new Exception\Argument("Invalid argument");
         }
-        $this->_from=$from;
+        $this->_from = $from;
         if ($fields) {
-            $this->_fields[$from]=$fields;
+            $this->_fields[$from] = $fields;
         }
         return $this;
     }
@@ -140,8 +140,8 @@ use Framework\Base as Base;
         $fields =array();
         $where = $order = $limit = $join ="";
         $template="SELECT %s FROM %s %s %s %s %s";
-        foreach ($this->fields as $table = >$_fields) {
-            foreach ($_fields as $field =>$alias) {
+        foreach ($this->fields as $table => $_fields) {
+            foreach ($_fields as $field => $alias) {
                 if (is_string($field)) {
                     $fields[]="{$field} AS {$alias}";
                 } else {
@@ -260,8 +260,8 @@ use Framework\Base as Base;
 
     public function first()
     {
-        $limit=$this->_limit;
-        $offset =$this->_offset;
+        $limit = $this->_limit;
+        $offset = $this->_offset;
         $this->limit(1);
         $all = $this->all();
         $first = ArrayMethods::first($all);

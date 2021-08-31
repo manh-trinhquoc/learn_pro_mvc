@@ -9,6 +9,7 @@ class Mysql extends Database\Query
     public function all()
     {
         $sql = $this->_buildSelect();
+        var_dump($sql);
         $result =$this->connector->execute($sql);
         if ($result === false) {
             $error =$this->connector->lastError;

@@ -53,8 +53,7 @@ class Mysql extends Database\Connector
     // connects to the database
     public function connect()
     {
-        if (!$this->_isValidService())
-        {
+        if (!$this->_isValidService()) {
             $this->_service =new \MySQLi(
                 $this->_host,
                 $this->_username,
@@ -62,8 +61,7 @@ class Mysql extends Database\Connector
                 $this->_schema,
                 $this->_port
             );
-            if ($this->_service->connect_error)
-            {
+            if ($this->_service->connect_error) {
                 throw new Exception\Service("Unable to connect to service");
             }
             $this->isConnected = true;
@@ -75,7 +73,7 @@ class Mysql extends Database\Connector
     public function disconnect()
     {
         if ($this->_isValidService()) {
-            $this->isConnected=false;
+            $this->isConnected = false;
             $this->_service->close();
         }
         return $this;
@@ -85,7 +83,7 @@ class Mysql extends Database\Connector
     public function query()
     {
         return new Database\Query\Mysql(array(
-            "connector" = >$this
+            "connector" => $this
         ));
     }
 
@@ -95,7 +93,8 @@ class Mysql extends Database\Connector
         if (!$this->_isValidService()) {
             throw new Exception\Service("Not connected to a valid service");
         }
-        return $this->_service->query($sql);
+        $result = $this->_service->query($sql);
+        return $result;
     }
 
     // escapes the provided value to make it safe for queries
@@ -131,7 +130,8 @@ class Mysql extends Database\Connector
         if (!$this->_isValidService()) {
             throw new Exception\Service("Not connected to a valid service");
         }
-        return $this->_service->error;
+        $lastError = $this->_service->error;
+        return $lastError;
     }
     
     public function sync($model) {

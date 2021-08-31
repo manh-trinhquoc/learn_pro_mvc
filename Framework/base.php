@@ -106,9 +106,7 @@ class Base
 
     protected function _getExceptionForImplementation($method)
     {
-        var_dump('before throw Exception\Argument ' . $method);
         return new Exception\Argument("{$method} method not implemented");
-        var_dump('after throw Exception\Argument ' . $method);
     }
 
 }
