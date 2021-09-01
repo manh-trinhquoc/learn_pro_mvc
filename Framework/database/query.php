@@ -89,13 +89,13 @@ use Framework\Base as Base;
         return $this;
     }
 
-    public function join($join, $on, $fields=array())
+    public function join($join, $on, $fields = array())
     {
         if (empty($join)) {
-            throw new Exception\Argument("Invalid argument");
+            throw new Exception\Argument("Invalid argument: join table empty");
         }
         if (empty($on)) {
-            throw new Exception\Argument("Invalid argument");
+            throw new Exception\Argument("Invalid argument: join condition emtpy");
         }
         $this->_fields += array($join =>$fields);
         $this->_join[] = "JOIN {$join} ON {$on}";
@@ -128,8 +128,8 @@ use Framework\Base as Base;
             throw new Exception\Argument("Invalid argument");
         }
         $arguments[0] = preg_replace("#\?#", "%s", $arguments[0]);
-        foreach (array_slice($arguments, 1, null, true) as $i => $parameter) {
-            $arguments[$i] = $this->_quote($arguments[$i]);
+        foreach (array_slice($arguments, 1, null, true) as $key => $parameter) {
+            $arguments[$key] = $this->_quote($arguments[$key]);
         }
         $this->_where[] = call_user_func_array("sprintf", $arguments);
         return $this;
@@ -143,7 +143,7 @@ use Framework\Base as Base;
         foreach ($this->fields as $table => $_fields) {
             foreach ($_fields as $field => $alias) {
                 if (is_string($field)) {
-                    $fields[]="{$field} AS {$alias}";
+                    $fields[]="{$field} AS `{$alias}`";
                 } else {
                     $fields[]=$alias;
                 }
@@ -171,7 +171,7 @@ use Framework\Base as Base;
             if ($_offset) {
                 $limit ="LIMIT {$_limit}, {$_offset}";
             } else {
-            $limit="LIMIT {$_limit}";
+                $limit="LIMIT {$_limit}";
             }
         }
         return sprintf($template, $fields, $this->from, $join, $where, $order, $limit);
@@ -264,7 +264,8 @@ use Framework\Base as Base;
         $offset = $this->_offset;
         $this->limit(1);
         $all = $this->all();
-        $first = ArrayMethods::first($all);
+        $first = $all[0];
+        // $first = ArrayMethods::first($all);
         if ($limit) {
             $this->_limit = $limit;
         }
@@ -276,22 +277,10 @@ use Framework\Base as Base;
 
     public function count()
     {
-        $limit=$this->limit;
-        $offset =$this->offset;
         $fields = $this->fields;
-        $this->_fields =array($this->from =>array("COUNT(1)" =>"rows"));
-        $this->limit(1);
-        $row =$this->first();
+        $this->_fields = array($this->from =>array("COUNT(1)" =>"rows"));
+        $row = $this->first();
         $this->_fields = $fields;
-        if ($fields) {
-            $this->_fields = $fields;
-        }
-        if ($limit) {
-            $this->_limit = $limit;
-        }
-        if ($offset) {
-            $this->_offset=$offset;
-        }
         return $row["rows"];
     }
 }

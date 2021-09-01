@@ -101,14 +101,14 @@ Framework\Test::add(
         $database = $database->initialize();
         $database = $database->connect();
         $database->execute("
-            DROP TABLE IF EXISTS tests;
+            DROP TABLE IF EXISTS `tests`;
         ");
         $database->execute("
             CREATE TABLE tests (
-                id int(11) NOT NULL AUTO_INCREMENT,
-                number int(11) NOT NULL,
-                text varchar(255) NOT NULL,
-                boolean tinyint(4) NOT NULL,
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `number` int(11) NOT NULL,
+                `text` varchar(255) NOT NULL,
+                `boolean` tinyint(4) NOT NULL,
                 PRIMARY KEY (id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ");
@@ -126,7 +126,7 @@ Framework\Test::add(
         $database = $database->connect();
         for ($i = 0; $i < 4; $i++) {
             $database->execute("
-                INSERT INTO tests (number, text, boolean) VALUES ('1337', 'text', '0');
+                INSERT INTO `tests` (number, text, boolean) VALUES ('1337', 'text', '0');
             ");
         }
         return $database->lastInsertId;
@@ -200,10 +200,6 @@ Framework\Test::add(
     "Database\Query\Mysql"
 );
 
-$result = Framework\Test::run();
-var_dump($result);
-// var_dump($result['exceptions']);
-
 Framework\Test::add(
     // The Database\Query\Mysql class can fetch multiple rows in a table.
     function () use ($options) {
@@ -215,13 +211,9 @@ Framework\Test::add(
             ->all();
         return (sizeof($rows) == 4);
     },
-    "Database\Query\Mysql fetches multiple rows",
+    "Database\Query\Mysql fetches multiple rows data",
     "Database\Query\Mysql"
 );
-
-
-
-// The Database\Query\Mysql class can use multiple WHERE clauses.
 
 Framework\Test::add(
     // The Database\Query\Mysql class can get the number of rows in a table.
@@ -235,7 +227,7 @@ Framework\Test::add(
             ->count();
         return ($count == 4);
     },
-    "Database\Query\Mysql fetches number of rows",
+    "Database\Query\Mysql fetches number of rows in a table",
     "Database\Query\Mysql"
 );
 
@@ -256,8 +248,8 @@ Framework\Test::add(
     "Database\Query\Mysql"
 );
 
-
 Framework\Test::add(
+    // The Database\Query\Mysql class can use multiple WHERE clauses.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -305,7 +297,7 @@ Framework\Test::add(
                 "baz.id" => "bar"
             ))
             ->all();
-        return (sizeof($rows) && $rows[0]->foo == $rows[0]->bar);
+        return (sizeof($rows) && $rows[0]['foo'] == $rows[0]['bar']);
     },
     "Database\Query\Mysql can join tables and alias joined fields",
     "Database\Query\Mysql"
@@ -329,6 +321,10 @@ Framework\Test::add(
     "Database\Query\Mysql can insert rows",
     "Database\Query\Mysql"
 );
+
+$result = Framework\Test::run();
+var_dump($result);
+// var_dump($result['exceptions']);
 
 Framework\Test::add(
     // The Database\Query\Mysql class can update rows.
