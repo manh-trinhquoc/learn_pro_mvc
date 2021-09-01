@@ -181,15 +181,16 @@ use Framework\Base as Base;
     {
         $fields=array();
         $values =array();
-        $template ="INSERT INTO '%s' ('%s') VALUES (%s)";
+        $template ="INSERT INTO `%s` (`%s`) VALUES (%s)";
         foreach ($data as $field =>$value) {
             $fields[] = $field;
             $values[] = $this->_quote($value);
         }
-        $fields = join("', '", $fields);
+        $fields = join("`, `", $fields);
         $values =join(", ", $values);
         return sprintf($template, $this->from, $fields, $values);
     }
+    
     protected function _buildUpdate($data)
     {
         $parts =array();
@@ -231,7 +232,7 @@ use Framework\Base as Base;
 
     public function save($data)
     {
-        $isInsert=sizeof($this->_where) == 0;
+        $isInsert = sizeof($this->_where) == 0;
         if ($isInsert) {
             $sql =$this->_buildInsert($data);
         } else {
@@ -239,7 +240,7 @@ use Framework\Base as Base;
         }
         $result = $this->_connector->execute($sql);
         if ($result === false) {
-            throw new Exception\Sql();
+            throw new Exception\Sql(__METHOD__);
         }
         if ($isInsert) {
             return $this->_connector->lastInsertId;
@@ -253,7 +254,7 @@ use Framework\Base as Base;
         $result = $this->_connector->execute($sql);
         if ($result === false)
         {
-        throw new Exception\Sql();
+            throw new Exception\Sql(__METHOD__);
         }
         return $this->_connector->affectedRows;
     }

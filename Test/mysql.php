@@ -322,10 +322,6 @@ Framework\Test::add(
     "Database\Query\Mysql"
 );
 
-$result = Framework\Test::run();
-var_dump($result);
-// var_dump($result['exceptions']);
-
 Framework\Test::add(
     // The Database\Query\Mysql class can update rows.
     function () use ($options) {
@@ -360,3 +356,7 @@ Framework\Test::add(
     "Database\Query\Mysql can delete rows",
     "Database\Query\Mysql"
 );
+
+$result = Framework\Test::run();
+var_dump($result);
+// var_dump($result['exceptions']);
