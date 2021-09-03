@@ -13,13 +13,13 @@ Framework\Test::add(
 );
 
 $options = array(
-    "type" => "mysql",
+    "type" => "mariadb",
     "options" => array(
         "host" => "localhost",
         "username" => "root",
-        "password" => "example",
+        "password" => "",
         "schema" => "prophpmvc",
-        "port" => "3307"
+        "port" => "3306"
     )
 );
 

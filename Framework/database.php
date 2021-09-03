@@ -27,7 +27,11 @@ class Database extends Base
         }
         switch ($this->type) {
             case "mysql":
+            case "mariadb":
                 return new Database\Connector\Mysql($this->options);
+                break;
+            case "postgres":
+                return new Database\Connector\Postgres($this->options);
                 break;
             default:
                 throw new Exception\Argument("Invalid type");

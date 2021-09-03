@@ -1,6 +1,7 @@
 <?php
-
 include_once __DIR__ . '/../autoload.php';
+
+var_dump(get_class_methods('\PDO'));
 
 Framework\Test::add(
     // The Database factory class can be created.
@@ -13,43 +14,43 @@ Framework\Test::add(
 );
 
 $options = array(
-    "type" => "mysql",
+    "type" => "postgres",
     "options" => array(
         "host" => "localhost",
-        "username" => "root",
+        "username" => "postgres",
         "password" => "example",
         "schema" => "prophpmvc",
-        "port" => "3307"
+        "port" => "5432"
     )
 );
 
 var_dump($options);
 
 Framework\Test::add(
-    // The Database\Connector\Mysql class can initialize.
+    // The Database\Connector\Postgres class can initialize.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
-        return ($database instanceof Framework\Database\Connector\Mysql);
+        return ($database instanceof Framework\Database\Connector\Postgres);
     },
-    "Database\Connector\Mysql initializes",
-    "Database\Connector\Mysql"
+    "Database\Connector\Postgres initializes",
+    "Database\Connector\Postgres"
 );
 
 Framework\Test::add(
-    // The Database\Connector\Mysql class can connect and return itself.
+    // The Database\Connector\Postgres class can connect and return itself.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
         $database = $database->connect();
-        return ($database instanceof Framework\Database\Connector\Mysql);
+        return ($database instanceof Framework\Database\Connector\Postgres);
     },
-    "Database\Connector\Mysql can connects and returns self",
-    "Database\Connector\Mysql"
+    "Database\Connector\Postgres can connects and returns self",
+    "Database\Connector\Postgres"
 );
 
 Framework\Test::add(
-    // The Database\Connector\Mysql class can disconnect and return itself.
+    // The Database\Connector\Postgres class can disconnect and return itself.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -58,29 +59,16 @@ Framework\Test::add(
         try {
             $database->execute("SELECT 1");
         } catch (Framework\Database\Exception\Service $e)  {
-            return ($database instanceof Framework\Database\Connector\Mysql);
+            return ($database instanceof Framework\Database\Connector\Postgres);
         }
         return false;
     },
-    "Database\Connector\Mysql disconnects and returns self",
-    "Database\Connector\Mysql"
+    "Database\Connector\Postgres disconnects and returns self",
+    "Database\Connector\Postgres"
 );
 
 Framework\Test::add(
-    // The Database\Connector\Mysql class can escape values.
-    function () use ($options) {
-        $database = new Framework\Database($options);
-        $database = $database->initialize();
-        $database = $database->connect();
-        return ($database->escape("foo'".'bar"') == "foo\\'bar\\\"");
-    },
-    "Database\Connector\Mysql escapes values",
-    "Database\Connector\Mysql"
-);
-
-
-Framework\Test::add(
-    // The Database\Connector\Mysql class can returns last sql error.
+    // The Database\Connector\Postgres class can returns last sql error.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -91,53 +79,63 @@ Framework\Test::add(
         $lastError = $database->lastError;
         return (bool) $lastError;
     },
-    "Database\Connector\Mysql can returns last sql error",
-    "Database\Connector\Mysql"
+    "Database\Connector\Postgres can returns last sql error",
+    "Database\Connector\Postgres"
 );
 
 Framework\Test::add(
-    // The Database\Connector\Mysql class can execute SQL queries.
+    // The Database\Connector\Postgres class can execute SQL queries.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
         $database = $database->connect();
-        $database->execute("
-            DROP TABLE IF EXISTS `tests`;
-        ");
-        $database->execute("
-            CREATE TABLE tests (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
-                `number` int(11) NOT NULL,
-                `text` varchar(255) NOT NULL,
-                `boolean` tinyint(4) NOT NULL,
-                PRIMARY KEY (id)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-        ");
+        $sql = 'DROP TABLE IF EXISTS "tests";' ;
+        // var_dump($sql);
+        $database->execute($sql);
+        // var_dump("lastError: " . $database->lastError);
+        $sql = '
+            CREATE TABLE IF NOT EXISTS tests (
+                "id" SERIAL PRIMARY KEY,
+                "number" INTEGER NOT NULL,
+                "text" CHARACTER VARYING(255) NOT NULL,
+                "boolean" boolean NOT NULL
+            );
+        ';
+        // var_dump($sql);
+        $database->execute($sql);
+        // var_dump("lastError: " . $database->lastError);
         return !$database->lastError;
     },
-    "Database\Connector\Mysql executes queries",
-    "Database\Connector\Mysql"
+    "Database\Connector\Postgres executes queries",
+    "Database\Connector\Postgres"
 );
 
 Framework\Test::add(
-    // The Database\Connector\Mysql class can return the last inserted ID.
+    // The Database\Connector\Postgres class can return the last inserted ID.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
         $database = $database->connect();
+        $sql = "
+            INSERT INTO tests (number, text, boolean) VALUES ('1337', 'text', '0');
+        ";
+        var_dump($sql);
         for ($i = 0; $i < 4; $i++) {
-            $database->execute("
-                INSERT INTO `tests` (number, text, boolean) VALUES ('1337', 'text', '0');
-            ");
+            $database->execute($sql);
         }
+        // var_dump($database->lastInsertId);
         return $database->lastInsertId;
     },
-    "Database\Connector\Mysql returns last inserted ID",
-    "Database\Connector\Mysql"
+    "Database\Connector\Postgres returns last inserted ID",
+    "Database\Connector\Postgres"
 );
 
+$result = Framework\Test::run();
+var_dump($result);
+// var_dump($result['exceptions']);
+
 Framework\Test::add(
-    // The Database\Connector\Mysql class can return the number of affected rows.
+    // The Database\Connector\Postgres class can return the number of affected rows.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -147,31 +145,31 @@ Framework\Test::add(
         ");
         return $database->affectedRows;
     },
-    "Database\Connector\Mysql returns affected rows",
-    "Database\Connector\Mysql"
+    "Database\Connector\Postgres returns affected rows",
+    "Database\Connector\Postgres"
 );
 
-// The Database\Connector\Mysql class can return the last SQL error.
+// The Database\Connector\Postgres class can return the last SQL error.
 
 /**
  * Because we are working with both connectors and queries, 
  * we need to check the associations between the two
  */
 Framework\Test::add(
-    // The Database\Connector\Mysql class can return a Database\Query\Mysql instance.
+    // The Database\Connector\Postgres class can return a Database\Query\Postgres instance.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
         $database = $database->connect();
         $query = $database->query();
-        return ($query instanceof Framework\Database\Query\Mysql);
+        return ($query instanceof Framework\Database\Query\Postgres);
     },
-    "Database\Connector\Mysql returns instance of Database\Query\Mysql",
-    "Database\Query\Mysql"
+    "Database\Connector\Postgres returns instance of Database\Query\Postgres",
+    "Database\Query\Postgres"
 );
 
 Framework\Test::add(
-    // The Database\Query\Mysql class references a connector.
+    // The Database\Query\Postgres class references a connector.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -179,15 +177,15 @@ Framework\Test::add(
         $query = $database->query();
         $connector = $query->connector;
         // var_dump($connector === $database);
-        return ($connector instanceof Framework\Database\Connector\Mysql);
+        return ($connector instanceof Framework\Database\Connector\Postgres);
     },
-    "Database\Query\Mysql references connector Database\Connector\Mysql",
-    "Database\Query\Mysql"
+    "Database\Query\Postgres references connector Database\Connector\Postgres",
+    "Database\Query\Postgres"
 );
 //end check associtations
 
 Framework\Test::add(
-    // The Database\Query\Mysql class can fetch the first row in a table.
+    // The Database\Query\Postgres class can fetch the first row in a table.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -197,12 +195,12 @@ Framework\Test::add(
             ->first();
         return ($row["id"] == 1);
     },
-    "Database\Query\Mysql fetches first row",
-    "Database\Query\Mysql"
+    "Database\Query\Postgres fetches first row",
+    "Database\Query\Postgres"
 );
 
 Framework\Test::add(
-    // The Database\Query\Mysql class can fetch multiple rows in a table.
+    // The Database\Query\Postgres class can fetch multiple rows in a table.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -212,12 +210,12 @@ Framework\Test::add(
             ->all();
         return (sizeof($rows) == 4);
     },
-    "Database\Query\Mysql fetches multiple rows data",
-    "Database\Query\Mysql"
+    "Database\Query\Postgres fetches multiple rows data",
+    "Database\Query\Postgres"
 );
 
 Framework\Test::add(
-    // The Database\Query\Mysql class can get the number of rows in a table.
+    // The Database\Query\Postgres class can get the number of rows in a table.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -228,12 +226,12 @@ Framework\Test::add(
             ->count();
         return ($count == 4);
     },
-    "Database\Query\Mysql fetches number of rows in a table",
-    "Database\Query\Mysql"
+    "Database\Query\Postgres fetches number of rows in a table",
+    "Database\Query\Postgres"
 );
 
 Framework\Test::add(
-    // The Database\Query\Mysql class can use limit, offset, order, and direction.
+    // The Database\Query\Postgres class can use limit, offset, order, and direction.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -245,12 +243,12 @@ Framework\Test::add(
             ->all();
         return (sizeof($rows) == 1 && $rows[0]["id"] == 3);
     },
-    "Database\Query\Mysql accepts LIMIT, OFFSET, ORDER and DIRECTION clauses",
-    "Database\Query\Mysql"
+    "Database\Query\Postgres accepts LIMIT, OFFSET, ORDER and DIRECTION clauses",
+    "Database\Query\Postgres"
 );
 
 Framework\Test::add(
-    // The Database\Query\Mysql class can use multiple WHERE clauses.
+    // The Database\Query\Postgres class can use multiple WHERE clauses.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -263,12 +261,12 @@ Framework\Test::add(
             ->all();
         return (sizeof($rows) == 1 && $rows[0]["id"] == 2);
     },
-    "Database\Query\Mysql accepts WHERE clauses",
-    "Database\Query\Mysql"
+    "Database\Query\Postgres accepts WHERE clauses",
+    "Database\Query\Postgres"
 );
 
 Framework\Test::add(
-    // The Database\Query\Mysql class can specify and alias fields.
+    // The Database\Query\Postgres class can specify and alias fields.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -280,12 +278,12 @@ Framework\Test::add(
             ->all();
         return (sizeof($rows) && isset($rows[0]["foo"]) && $rows[0]["foo"] == 1);
     },
-    "Database\Query\Mysql can alias fields",
-    "Database\Query\Mysql"
+    "Database\Query\Postgres can alias fields",
+    "Database\Query\Postgres"
 );
 
 Framework\Test::add(
-    // The Database\Query\Mysql class can join tables and alias joined fields.
+    // The Database\Query\Postgres class can join tables and alias joined fields.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -300,12 +298,12 @@ Framework\Test::add(
             ->all();
         return (sizeof($rows) && $rows[0]['foo'] == $rows[0]['bar']);
     },
-    "Database\Query\Mysql can join tables and alias joined fields",
-    "Database\Query\Mysql"
+    "Database\Query\Postgres can join tables and alias joined fields",
+    "Database\Query\Postgres"
 );
 
 Framework\Test::add(
-    // The Database\Query\Mysql class can insert rows.
+    // The Database\Query\Postgres class can insert rows.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -319,12 +317,12 @@ Framework\Test::add(
             ));
         return ($result == 5);
     },
-    "Database\Query\Mysql can insert rows",
-    "Database\Query\Mysql"
+    "Database\Query\Postgres can insert rows",
+    "Database\Query\Postgres"
 );
 
 Framework\Test::add(
-    // The Database\Query\Mysql class can update rows.
+    // The Database\Query\Postgres class can update rows.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -339,12 +337,12 @@ Framework\Test::add(
             ));
         return ($result == 0);
     },
-    "Database\Query\Mysql can update rows",
-    "Database\Query\Mysql"
+    "Database\Query\Postgres can update rows",
+    "Database\Query\Postgres"
 );
 
 Framework\Test::add(
-    // The Database\Query\Mysql class can delete rows.
+    // The Database\Query\Postgres class can delete rows.
     function () use ($options) {
         $database = new Framework\Database($options);
         $database = $database->initialize();
@@ -354,10 +352,6 @@ Framework\Test::add(
             ->delete();
         return ($database->query()->from("tests")->count() == 0);
     },
-    "Database\Query\Mysql can delete rows",
-    "Database\Query\Mysql"
+    "Database\Query\Postgres can delete rows",
+    "Database\Query\Postgres"
 );
-
-$result = Framework\Test::run();
-var_dump($result);
-// var_dump($result['exceptions']);
