@@ -138,41 +138,41 @@ class Mysql extends Database\Connector
         $lines = array();
         $indices = array();
         $columns = $model->columns;
-        $template = "CREATE TABLE '%s' (\n%s,\n%s\n) ENGINE=%s DEFAULT CHARSET=%s;";
+        $template = "CREATE TABLE `%s` (\n%s,\n%s\n) ENGINE=%s DEFAULT CHARSET=%s;";
         foreach ($columns as $column) {
             $raw = $column["raw"];
             $name = $column["name"];
             $type = $column["type"];
             $length = $column["length"];
             if ($column["primary"]) {
-                $indices[] = "PRIMARY KEY ('{$name}')";
+                $indices[] = "PRIMARY KEY (`{$name}`)";
             }
             if ($column["index"]) {
-                $indices[] = "KEY '{$name}' ('{$name}')";
+                $indices[] = "KEY `{$name}` (`{$name}`)";
             }
 
             switch ($type) {
                 case "autonumber":
-                    $lines[] = "'{$name}' int(11) NOT NULL AUTO_INCREMENT";
+                    $lines[] = "`{$name}` int(11) NOT NULL AUTO_INCREMENT";
                     break;
                 case "text":
                     if ($length !== null && $length <= 255) {
-                        $lines[] = "'{$name}' varchar({$length}) DEFAULT NULL";
+                        $lines[] = "`{$name}` varchar({$length}) DEFAULT NULL";
                     } else {
-                        $lines[] = "'{$name}' text";
+                        $lines[] = "`{$name}` text";
                     }
                     break;
                 case "integer":
-                    $lines[] = "'{$name}' int(11) DEFAULT NULL";
+                    $lines[] = "`{$name}` int(11) DEFAULT NULL";
                     break;
                 case "decimal":
-                    $lines[] = "'{$name}' float DEFAULT NULL";
+                    $lines[] = "`{$name}` float DEFAULT NULL";
                     break;
                 case "boolean":
-                    $lines[] = "'{$name}' tinyint(4) DEFAULT NULL";
+                    $lines[] = "`{$name}` tinyint(4) DEFAULT NULL";
                     break;
                 case "datetime":
-                    $lines[] = "'{$name}' datetime DEFAULT NULL";
+                    $lines[] = "`{$name}` datetime DEFAULT NULL";
                     break;
             }
         }
@@ -186,16 +186,15 @@ class Mysql extends Database\Connector
             $this->_charset
         );
         $result = $this->execute("DROP TABLE IF EXISTS {$table};");
-
         if ($result === false) {
             $error = $this->lastError;
-            throw new Exception\Sql("There was an error in the query: {$error}");
+            throw new Exception\Sql("There was an error in the query to drop table: {$error}");
         }
 
         $result = $this->execute($sql);
         if ($result === false) {
             $error = $this->lastError;
-            throw new Exception\Sql("There was an error in the query: {$error}");
+            throw new Exception\Sql("There was an error in the query to create table: {$error}");
         }
         return $this;
     }

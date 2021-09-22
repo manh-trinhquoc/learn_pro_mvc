@@ -57,15 +57,16 @@ class Model extends Base
     }
 
     public function getColumns() {
-        if (empty($_columns)) {
+        if (empty($this->_columns)) {
             $primaries = 0;
             $columns = array();
             $class = get_class($this);
             $types = $this->types;
             $inspector = new Inspector($this);
             $properties = $inspector->getClassProperties();
-            $first = function($array, $key) {
-                if (!empty($array[$key]) && sizeof($array[$key]) == 1) {
+            $first = function ($array, $key) {
+                
+                if (!empty($array[$key]) && is_array($array[$key]) && sizeof($array[$key]) == 1) {
                     return $array[$key][0];
                 }
                 return null;

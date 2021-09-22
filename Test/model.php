@@ -8,8 +8,8 @@ $database = new Framework\Database(
         "type" => "mysql",
         "options" => array(
             "host" => "localhost",
-            "username" => "prophpmvc",
-            "password" => "prophpmvc",
+            "username" => "root",
+            "password" => "",
             "schema" => "prophpmvc"
         )
     )
@@ -63,6 +63,11 @@ Framework\Test::add(
     "Model inserts rows",
     "Model"
 );
+
+$result = Framework\Test::run();
+var_dump($result);
+// var_dump($result['exceptions']);
+die();
 
    Framework\Test::add(
     function() use ($database)
