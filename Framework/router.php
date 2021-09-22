@@ -12,6 +12,11 @@ class Router extends Base {
     /**
      * @readwrite
      */
+    protected $_pattern;
+
+    /**
+     * @readwrite
+     */
      protected $_url;
     
      /**
@@ -28,6 +33,11 @@ class Router extends Base {
      * @read
      */
     protected $_action;
+
+     /**
+     * @readwrite
+     */
+    protected $_parametters = array();
 
     protected $_routes = array();
 
@@ -109,7 +119,7 @@ class Router extends Base {
         $this->_action = $action;
 
         try {
-            $instance =n new $name(array(
+            $instance = new $name(array(
                 "parameters" => $parameters
             ));
             Registry::set("controller", $instance);

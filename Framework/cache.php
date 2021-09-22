@@ -3,9 +3,7 @@
 namespace Framework;
 
 use Framework\Base as Base;
-use Framework\Cache as Cache;
 use Framework\Cache\Exception as Exception;
-use Framework\Core\Exception as CoreException;
 
 class Cache extends Base {
     /**
@@ -27,14 +25,17 @@ class Cache extends Base {
             throw new Exception\Argument("Invalid type");
         }
         switch ($this->type) {
-            case "memcached": {
-                return new Cache\Driver\Memcached($this->options);
+            case "memcached":
+                $memcache = new Cache\Driver\Memcached($this->options);
+                $memcache = $memcache->initialize();
+                return $memcache;
+            case "redis":
+                $memcache = new Cache\Driver\Redis($this->options);
+                $memcache = $memcache->initialize();
+                return $memcache;
+            default:
+                throw new Exception\Argument("Invalid type");
                 return;
-            }
-            default: {
-                throw new CoreException\Argument("Invalid type");
-                return;
-            }
         }
     }
 }
