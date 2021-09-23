@@ -74,56 +74,55 @@ Framework\Test::add(
     "Model"
 );
 
-   $result = Framework\Test::run();
-var_dump($result);
-// var_dump($result['exceptions']);
-die();
+ 
 
-   Framework\Test::add(
-    function() use ($database)
-    {
+Framework\Test::add(
+    function () use ($database) {
+        $example = new Example(array(
+            "name" => "foo",
+            "created" => date("Y-m-d H:i:s")
+        ));
+        $example->save();
+        $example->save();
+        $example->save();
         
-    $example = new Example(array(
-    "name" => "foo",
-    "created" => date("Y-m-d H:i:s")
-    ));
-    $example->save();
-    $example->save();
-    $example->save();
-    return (Example::count() == 2);
+        return (Example::count() == 2);
     },
     "Model saves single row multiple times",
     "Model"
-   );
+);
 
-   Framework\Test::add(
-    function() use ($database)
-    {
-
+Framework\Test::add(
+    function () use ($database) {
         # We need to test whether rows can be updated from the database. 
-    $example = new Example(array(
-    "id" => 1,
-    "name" => "hello",
-    "created" => date("Y-m-d H:i:s")
-    ));
-    $example->save();
-    return (Example::first()->name == "hello");
+        $example = new Example(array(
+            "id" => 1,
+            "name" => "hello",
+            "created" => date("Y-m-d H:i:s")
+        ));
+        $example->save();
+        return (Example::first()->name == "hello");
     },
     "Model updates rows",
     "Model"
-   );
+);
 
-   Framework\Test::add(
-    function() use ($database)
-    {
+   
 
+Framework\Test::add(
+    function () use ($database) {
         # We need to test whether rows can be  deleted from the database. 
-    $example = new Example(array(
-    "id" => 2
-    ));
-    $example->delete();
-    return (Example::count() == 1);
+        $example = new Example(array(
+            "id" => 2
+        ));
+        $example->delete();
+        return (Example::count() == 1);
     },
     "Model deletes rows",
     "Model"
-   );
+);
+
+   $result = Framework\Test::run();
+   var_dump($result);
+   // var_dump($result['exceptions']);
+   die();

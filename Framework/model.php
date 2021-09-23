@@ -272,19 +272,16 @@ class Model extends Base
         $first = $query->first();
         $class = get_class($this);
         if ($first) {
-            return new $class( $query->first() );
+            return new $class($query->first());
         }
         return null;
     }
 
     public static function count($where = array())
     {
-        $self = new self();
-        var_dump($self);
         $model = new static();
-        var_dump($model);
-        
-        return $model->_count($where);
+        $result = $model->_count($where);
+        return $result;
     }
     protected function _count($where = array())
     {
