@@ -170,6 +170,7 @@ class Model extends Base
         $raw = $primary["raw"];
         $name = $primary["name"];
         $query = $this->connector->query()->from($this->table);
+
         if (!empty($this->$raw)) {
             $query->where("{$name} = ?", $this->$raw);
         }
@@ -186,6 +187,7 @@ class Model extends Base
                 continue;
             }
         }
+        
         $result = $query->save($data);
         if ($result > 0) {
             $this->$raw = $result;
@@ -277,7 +279,11 @@ class Model extends Base
 
     public static function count($where = array())
     {
+        $self = new self();
+        var_dump($self);
         $model = new static();
+        var_dump($model);
+        
         return $model->_count($where);
     }
     protected function _count($where = array())

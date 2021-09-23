@@ -52,7 +52,7 @@ Framework\Test::add(
 );
 
 Framework\Test::add(
-    # We need to test whether rows can be inserted, updated, and deleted from the database. 
+    # We need to test whether rows can be inserted from the database. 
     function () use ($database) {
         $example = new Example(array(
             "name" => "foo",
@@ -64,7 +64,17 @@ Framework\Test::add(
     "Model"
 );
 
-$result = Framework\Test::run();
+
+
+Framework\Test::add(
+    function () use ($database) {
+        return (Example::count() == 1);
+    },
+    "Model fetches number of rows",
+    "Model"
+);
+
+   $result = Framework\Test::run();
 var_dump($result);
 // var_dump($result['exceptions']);
 die();
@@ -72,15 +82,7 @@ die();
    Framework\Test::add(
     function() use ($database)
     {
-    return (Example::count() == 1);
-    },
-    "Model fetches number of rows",
-    "Model"
-   );
-
-   Framework\Test::add(
-    function() use ($database)
-    {
+        
     $example = new Example(array(
     "name" => "foo",
     "created" => date("Y-m-d H:i:s")
@@ -97,6 +99,8 @@ die();
    Framework\Test::add(
     function() use ($database)
     {
+
+        # We need to test whether rows can be updated from the database. 
     $example = new Example(array(
     "id" => 1,
     "name" => "hello",
@@ -112,6 +116,8 @@ die();
    Framework\Test::add(
     function() use ($database)
     {
+
+        # We need to test whether rows can be  deleted from the database. 
     $example = new Example(array(
     "id" => 2
     ));
