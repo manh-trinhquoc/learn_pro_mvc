@@ -128,7 +128,8 @@ class StringMethods
         return $result;
     }
 
-    public static function generateRandomString($length = 10) {
+    public static function generateRandomString($length = 10)
+    {
         return substr(
             str_shuffle(
                 str_repeat(
@@ -138,5 +139,45 @@ class StringMethods
             1,
             $length
         );
+    }
+
+    public static function sanitize($string, $mask)
+    {
+        if (is_array($mask)) {
+            $parts=$mask;
+        } elseif (is_string($mask)) {
+            $parts = str_split($mask);
+        } else {
+            return $string;
+        }
+        foreach ($parts as $part) {
+            $normalized= self::_normalize("\\{$part}");
+            $string =preg_replace(
+                "{$normalized}m",
+                "\\{$part}",
+                $string
+            );
+        }
+        return $string;
+    }
+
+    public static function unique($string)
+    {
+        $unique = "";
+        $parts = str_split($string);
+        foreach ($parts as $part) {
+            if (!strstr($unique, $part)) {
+                $unique .= $part;
+            }
+        }
+        return $unique;
+    }
+
+    public function indexOf($string, $substring, $offset = null) {
+        $position = strpos($string, $substring, $offset);
+        if (!is_int($position)) {
+            return -1;
+        }
+        return $position;
     }
 }

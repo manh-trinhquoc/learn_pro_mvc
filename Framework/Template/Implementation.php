@@ -1,4 +1,5 @@
 <?php
+namespace Framework\Template;
 
 use Framework\Base as Base;
 use Framework\StringMethods as StringMethods;
