@@ -7,44 +7,37 @@ $template = new Framework\Template(array(
     "implementation" => new Framework\Template\Implementation\Standard()
 ));
 
-$result = Framework\Test::run();
-var_dump($result);
-// var_dump($result['exceptions']);
-die();
+// Framework\Test::add(
+//     // The Template class can be created.
+//     function () use ($template) {
+//         return ($template instanceof Framework\Template);
+//     },
+//     "Template instantiates",
+//     "Template"
+// );
 
-Framework\Test::add(
-    // The Template class can be created.
-    function () use ($template) {
-        return ($template instanceof Framework\Template);
-    },
-    "Template instantiates",
-    "Template"
-);
+// Framework\Test::add(
+//     // The Template class can parse echo tags.
+//     function () use ($template) {
+//         $template->parse("{echo 'hello world'}");
+//         $processed = $template->process();
+//         return ($processed == "hello world");
+//     },
+//     "Template parses echo tag",
+//     "Template"
+// );
 
 
-
-
-Framework\Test::add(
-    // The Template class can parse echo tags.
-    function () use ($template) {
-        $template->parse("{echo ‘hello world’}");
-        $processed = $template->process();
-        return ($processed == "hello world");
-    },
-    "Template parses echo tag",
-    "Template"
-);
-
-Framework\Test::add(
-    // The Template class can parse script tags.
-    function () use ($template) {
-        $template->parse("{script \$_text[] = ‘foo bar’ }");
-        $processed = $template->process();
-        return ($processed == "foo bar");
-    },
-    "Template parses script tag",
-    "Template"
-);
+// Framework\Test::add(
+//     // The Template class can parse script tags.
+//     function () use ($template) {
+//         $template->parse("{script \$_text[] = 'foo bar' }");
+//         $processed = $template->process();
+//         return ($processed == "foo bar");
+//     },
+//     "Template parses script tag",
+//     "Template"
+// );
 
 Framework\Test::add(
     // The Template class can parse foreach tags.
@@ -58,6 +51,13 @@ Framework\Test::add(
     "Template parses foreach tag",
     "Template"
 );
+
+
+
+$result = Framework\Test::run();
+var_dump($result);
+// var_dump($result['exceptions']);
+die();
 
        Framework\Test::add(
            // The Template class can parse for tags.

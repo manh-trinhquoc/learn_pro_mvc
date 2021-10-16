@@ -23,26 +23,37 @@ class Implementation extends Base
             $handler =$this->_handler($node);
             return call_user_func_array(array($this, $handler), array($node, $content));
         } catch (\Exception $e) {
-            throw new Exception\Implementation();
+            throw new Exception\Implementation('template handle fail');
         }
     }
-
+    
+    /**
+     * The match() method evaluates a $source string to determine if it matches a tag or statement.
+     * Method return the most inner match.
+     * The order of delimiter declaration in $_map is importance
+     *
+     * @param [type] $source
+     * @return void
+     */
     public function match($source)
     {
         $type = null;
         $delimiter = null;
-        foreach ($this-> _map as $_delimiter => $_type) {
+        foreach ($this->_map as $_delimiter => $_type) {
             if (!$delimiter || StringMethods::indexOf($source, $type["opener"]) == -1) {
                 $delimiter =$_delimiter;
                 $type =$_type;
             }
             $indexOf = StringMethods::indexOf($source, $_type["opener"]);
             if ($indexOf > -1) {
-                if (StringMethods::indexOf($source, $type["opener"])>$indexOf) {
+                if (StringMethods::indexOf($source, $type["opener"]) > $indexOf) {
                     $delimiter=$_delimiter;
                     $type = $_type;
                 }
             }
+            // var_dump($indexOf);
+            // var_dump($_delimiter);
+            // var_dump($delimiter);
         }
         if ($type == null) {
             return null;
