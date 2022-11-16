@@ -1,5 +1,2 @@
 <?php
-
-use Framework\Inspector;
-
-require_once 'autoload.php';
+var_dump(getenv('PHP_ENV'), $_SERVER, $_REQUEST);
