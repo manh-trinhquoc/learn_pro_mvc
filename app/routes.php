@@ -47,4 +47,46 @@ return function (Router $router) {
             return "service is {$parameters['service']}";
         },
     );
+
+    $router->add(
+        'GET',
+        '/products/{page?}',
+        function () use ($router) {
+            $parameters = $router->current()->parameters();
+            $parameters['page'] ??= 1;
+
+            return "products for page {$parameters['page']}";
+        },
+    )->name('product-list');
+
+    $router->add(
+        'GET',
+        '/',
+        fn () => view('home', ['number' => 42]),
+    );
+
+    $router->add(
+        'GET',
+        '/products/view/{product}',
+        function () use ($router) {
+            $parameters = $router->current()->parameters();
+
+            return view('products/view', [
+                'product' => $parameters['product'],
+            ]);
+        },
+    );
+
+    $router->add(
+        'GET',
+        '/products/view/{product}',
+        function () use ($router) {
+            $parameters = $router->current()->parameters();
+
+            return view('products/view', [
+                'product' => $parameters['product'],
+                'scary' => '<script>alert("boo!")</script>',
+            ]);
+        },
+    );
 };

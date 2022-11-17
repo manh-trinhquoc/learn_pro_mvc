@@ -10,6 +10,8 @@ class Route
 
     protected array $parameters = [];
 
+    protected ?string $name = null;
+
     public function __construct(
         string $method,
         string $path,
@@ -132,6 +134,17 @@ class Route
     public function dispatch()
     {
         return call_user_func($this->handler);
+    }
+
+    public function name(string $name = null): mixed
+    {
+        if ($name) {
+            $this->name = $name;
+
+            return $this;
+        }
+
+        return $this->name;
     }
 
     private function normalisePath(string $path): string

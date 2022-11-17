@@ -2,6 +2,8 @@
 
 namespace Framework\Routing;
 
+use Exception;
+
 class Router
 {
     protected array $routes = [];
@@ -92,6 +94,34 @@ class Router
     public function current(): ?Route
     {
         return $this->current;
+    }
+
+    public function route(
+        string $name,
+        array $parameters = []
+    ): string {
+        foreach ($this->routes as $route) {
+            if ($route->name() === $name) {
+                $finds = [];
+                $replaces = [];
+                foreach ($parameters as $key => $value) {
+                    // one set for required parameters
+                    array_push($finds, "{{$key}}");
+                    array_push($replaces, $value);
+                    // ...and another for optional parameters
+                    array_push($finds, "{{$key}?}");
+                    array_push($replaces, $value);
+                }
+                $path = $route->path();
+                $path = str_replace($finds, $replaces, $path);
+                // remove any optional parameters not provided
+                return preg_replace('#{[^}]+}#', '', $path);
+                // we should think about warning if a required
+                // parameter hasn't been provided...
+            }
+        }
+
+        throw new \Exception('no route with that name');
     }
 
     private function paths(): array
